@@ -1,0 +1,7 @@
+package com.example.antivirus.repository;
+
+import com.example.antivirus.model.License;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface LicenseRepository extends JpaRepository<License, Long> {
+}

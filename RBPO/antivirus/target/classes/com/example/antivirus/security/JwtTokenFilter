@@ -1,0 +1,40 @@
+package com.example.antivirus.security;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class JwtTokenFilter extends OncePerRequestFilter {
+
+    private JwtTokenProvider tokenProvider;
+
+    public JwtTokenFilter(JwtTokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String token = getTokenFromRequest(request);
+        if (token != null && tokenProvider.validateToken(token)) {
+            String username = tokenProvider.getUsername(token);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(username, null, null);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : null;
+    }
+}
