@@ -1,7 +1,0 @@
-package com.example.antivirus.repository;
-
-import com.example.antivirus.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface UserRepository extends JpaRepository<User, Long> {
-}
